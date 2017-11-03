@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>					
+#include <Windows.h>
+
+using namespace std;
+
+struct node {						
+	int data;					
+	node* prev;					
+};
+
+struct queue {				
+	node* right;					// адрес "верхушки"
+	node* left;						// адрес "корня"
+	size_t size;				
+};
+
+void steps(queue *Q);				// прототип для функции, обобщающей все действия ниже 
+void push(queue *Q);				// прототип для функции "добавление ячейки" в очередь
+void pop(queue *Q);					// прототип для функции "удаление ячейки" из очереди
+void output(queue *Q);				// прототип для функции "вывод"
+
+int main()
+{
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	queue Queue;					// макет очереди
+	Queue.right = NULL;				// адрес вершины, равный NULL, т.к. её пока что нет
+	Queue.left = NULL;				// адрес низа
+	Queue.size = 0;					// количество элеметов в очереди
+	steps(&Queue);
+	system("pause");
+	return 0;
+}
+
+void steps(queue *Q)
+{
+	int count;						// переменная для выбора в switch
+	cout << "Выберите действие:" << endl;
+	cout << "1 - добавление элемента в конец очереди;" << endl;
+	cout << "2 - удаление элемента из начала очереди;" << endl;
+	cout << "3 - вывод очереди;" << endl;
+	cout << "4 - выход." << endl;
+	bool end = 0;
+	while (!end)
+	{
+		cout << endl;
+		cout << "Действие № ";
+		cin >> count;
+		switch (count)
+		{
+		case 1:						// если count = 1
+		{
+			push(Q);
+			break;
+		}
+		case 2:						// если count = 2
+		{
+			if (Q->size == 0)
+			{
+				cout << "Очередь пуста!" << endl;
+			}
+			else
+			{
+				pop(Q);
+			}
+			break;
+		}
+		case 3:						// если count = 3 
+		{
+			if (Q->size == 0)
+			{
+				cout << "Очередь пуста!" << endl;
+			}
+			else
+			{
+				output(Q);
+			}
+			break;
+		}
+		case 4:						// если count = 4 
+		{
+			end = 1;
+			cout << "Выход из программы." << endl;
+			break;
+		}
+		default:					// если count равно любому другому значению
+			cout << "Некорректный ввод!" << endl;
+		}
+	}
+}
+
+void push(queue *Q)
+{
+	int value;										// "число" для ввода в очередь
+	cout << "Введите число для ввода в очередь: ";
+	cin >> value;								         	// value pointer - шаблон ячейки которую будем заполнять
+	node *value_pointer = new node;					
+	value_pointer->data = value;				
+	if (Q->size == 0)
+	{
+		Q->right = value_pointer;					// если в очереди не было элементов, то новый будет и корнем, и верхушкой
+	}
+	else
+	{
+		Q->left->prev = value_pointer;				// если уже есть элементы, то верхушка (старая) будет указывать на новую как на предыдущий элемент
+	}
+	Q->left = value_pointer;
+	Q->left->prev = NULL;
+	Q->size++;
+}
+
+void pop(queue *Q)
+{
+	int value_temp = 0;								
+	node* top_pointer = Q->right;					
+	value_temp = top_pointer->data;				
+	Q->right = top_pointer->prev;					
+	delete top_pointer;							
+	Q->size--;
+	cout << "Удаление элемента << " << value_temp << " >> из начала очереди.";	// возвращаем значение старой верхушки
+	cout << endl;
+}
+
+void output(queue *Q)
+{
+	node* output_pointer = Q->right;			
+	cout << "Вывод очереди: ";
+	while (output_pointer != NULL)					
+	{
+		cout << output_pointer->data << " ";		
+		output_pointer = output_pointer->prev;		
+	}
+	cout << endl;
+}
